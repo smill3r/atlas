@@ -1,0 +1,70 @@
+{
+  "yearStart": 1960,
+  "yearEnd": 2025,
+  "indicators": [
+    {
+      "code": "EG.ELC.ACCS.ZS",
+      "name": "Access to electricity (% of population)",
+      "unit": "% of population",
+      "description": "Access to electricity is the percentage of population with access to electricity. Electrification data are collected from industry, national surveys and international sources.",
+      "source": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023",
+      "min": 0.533898532390594,
+      "max": 100,
+      "breaks": [
+        46.9667,
+        86.8091,
+        98.6,
+        100,
+        100
+      ]
+    },
+    {
+      "code": "EN.GHG.CO2.MT.CE.AR5",
+      "name": "Carbon dioxide (CO2) emissions (total) excluding LULUCF (Mt CO2e)",
+      "unit": "Mt CO2e",
+      "description": "A measure of annual emissions of carbon dioxide (CO2), one of the six Kyoto greenhouse gases (GHG), from the agriculture, energy, waste, and industrial sectors, excluding LULUCF.. The measure is standardized to carbon dioxide equivalent values using the Global Warming Potential (GWP) factors of IPCC's 5th Assessment Report (AR5).",
+      "source": "EDGAR (Emissions Database for Global Atmospheric Research) Community GHG Database, Joint Research Centre (JRC) - European Commission, uri: https://edgar.jrc.ec.europa.eu/dataset_ghg2024, publisher: JRC European Commission, date published: 2024;\nInternational Energy Agency (IEA), uri: https://edgar.jrc.ec.europa.eu/dataset_ghg2024, publisher: International Energy Agency (IEA), date published: 2024",
+      "min": 0,
+      "max": 39632.6642185422,
+      "breaks": [
+        0.4267,
+        3.5071,
+        17.9121,
+        71.6532,
+        510.572
+      ]
+    },
+    {
+      "code": "IT.NET.USER.ZS",
+      "name": "Individuals using the Internet (% of population)",
+      "unit": "% of population",
+      "description": "Internet users are individuals who have used the Internet (from any location) in the last 3 months. The Internet can be used via a computer, mobile phone, personal digital assistant, games machine, digital TV etc.",
+      "source": "World Telecommunication/ICT Indicators Database, International Telecommunication Union (ITU), uri: https://datahub.itu.int/",
+      "min": 0,
+      "max": 100,
+      "breaks": [
+        0.5997,
+        6.0227,
+        21.15,
+        45.8045,
+        73.4777
+      ]
+    },
+    {
+      "code": "SE.PRM.CMPT.FE.ZS",
+      "name": "Primary completion rate, female (% of relevant age group)",
+      "unit": "% of relevant age group",
+      "description": "Primary completion rate, or gross intake ratio to the last grade of primary education, is the number of new entrants (enrollments minus repeaters) in the last grade of primary education, regardless of age, divided by the population at the entrance age for the last grade of primary education. Data limitations preclude adjusting for students who drop out during the final year of primary education.",
+      "source": "Data API, UN Educational, Scientific and Cultural Organization (UNESCO), uri: https://databrowser.uis.unesco.org/resources, note: The data are obtained through the UIS API.  Detailed documentation is available at: https://api.uis.unesco.org/api/public/documentation/, publisher: UNESCO Institute for Statistics (UIS), date accessed: 2026-03-19, date published: 2026-02",
+      "min": 0.783429980278015,
+      "max": 168.181823730469,
+      "breaks": [
+        48.3391,
+        70.2837,
+        89.3187,
+        96.4282,
+        99.6405
+      ]
+    }
+  ]
+}

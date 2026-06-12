@@ -24,7 +24,9 @@ export function parseIndicatorCsv(csv: string): ParsedIndicatorCsv {
   const header = records[headerIndex] ?? [];
   const years = header
     .slice(4)
-    .map((y) => Number(y))
+    // Guard against the trailing empty column (real WB rows end with a comma):
+    // Number('') is 0, not NaN, so blank cells must be dropped before conversion.
+    .map((y) => (y === undefined || y.trim() === '' ? NaN : Number(y)))
     .filter((y) => Number.isFinite(y));
 
   const rows: IndicatorRow[] = records.slice(headerIndex + 1).map((r) => ({
