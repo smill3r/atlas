@@ -22,11 +22,22 @@ export interface CountryIndicatorStat {
   meta: IndicatorMeta;
   series: (number | null)[];
   value: number | null; // value at the selected year
+  percentile: number | null; // 0–100 global rank at the selected year
+  trend: 'up' | 'down' | 'flat' | null; // 5-year direction
 }
 
 export interface CountryProfile {
   country: Country;
   stats: CountryIndicatorStat[];
+}
+
+/** Glanceable insight card for the active indicator at the selected year. */
+export interface HeroStat {
+  icon: string;
+  headline: string;
+  subline: string | null;
+  percent: number | null; // 0–100 for the progress bar fill
+  trend: 'up' | 'down' | 'flat' | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -197,6 +208,92 @@ export class AtlasStore {
     { initialValue: [] as Country[] },
   );
 
+  // --- Hero stat card -------------------------------------------------------
+
+  private static readonly INDICATOR_ICONS: Record<string, string> = {
+    'EG.ELC.ACCS.ZS': '⚡',
+    'EN.GHG.CO2.MT.CE.AR5': '💨',
+    'IT.NET.USER.ZS': '🌐',
+    'SE.PRM.CMPT.FE.ZS': '📚',
+  };
+
+  readonly heroStat = computed<HeroStat | null>(() => {
+    const meta = this.activeIndicator();
+    const data = meta ? this.indicatorsByCode()[meta.code] : undefined;
+    const year = this.selectedYear();
+    const m = this.manifest();
+    const countries = this.countries();
+    if (!meta || !data || year == null || !m || countries.length === 0) return null;
+
+    const idx = year - m.yearStart;
+    const prevYear = Math.max(m.yearStart, year - 10);
+    const prevIdx = prevYear - m.yearStart;
+    const icon = AtlasStore.INDICATOR_ICONS[meta.code] ?? '🌍';
+    const isPercent = meta.unit.includes('%');
+
+    const vals: number[] = [];
+    const prevVals: number[] = [];
+    let maxVal = -Infinity;
+    let maxCountryName = '';
+
+    for (const c of countries) {
+      const series = data.countries[c.code];
+      if (!series) continue;
+      const v = series[idx] ?? null;
+      const pv = series[prevIdx] ?? null;
+      if (v !== null) {
+        vals.push(v);
+        if (v > maxVal) {
+          maxVal = v;
+          maxCountryName = c.name;
+        }
+      }
+      if (pv !== null) prevVals.push(pv);
+    }
+
+    if (vals.length === 0) return null;
+
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const prevAvg = prevVals.length > 0 ? prevVals.reduce((a, b) => a + b, 0) / prevVals.length : null;
+    const delta = prevAvg !== null ? avg - prevAvg : null;
+    const trend: HeroStat['trend'] =
+      delta === null ? null : delta > 0.5 ? 'up' : delta < -0.5 ? 'down' : 'flat';
+
+    let headline: string;
+    let percent: number | null;
+    let subline: string | null = null;
+
+    if (meta.code === 'EG.ELC.ACCS.ZS') {
+      const lacking = vals.filter((v) => v < 50).length;
+      headline = `${lacking} countries lack basic electricity access`;
+      percent = avg;
+      if (delta !== null)
+        subline = `Global avg ${avg.toFixed(0)}% — ${delta > 0 ? '+' : ''}${delta.toFixed(1)}pp since ${prevYear}`;
+    } else if (meta.code === 'IT.NET.USER.ZS') {
+      headline = `${avg.toFixed(1)}% global internet penetration`;
+      percent = avg;
+      if (delta !== null)
+        subline = `${delta > 0 ? '+' : ''}${delta.toFixed(1)}pp over the last 10 years`;
+    } else if (meta.code === 'SE.PRM.CMPT.FE.ZS') {
+      headline = `${avg.toFixed(1)}% female primary completion rate`;
+      percent = Math.min(100, avg);
+      if (delta !== null)
+        subline = `${delta > 0 ? '+' : ''}${delta.toFixed(1)}pp over the last 10 years`;
+    } else if (meta.code === 'EN.GHG.CO2.MT.CE.AR5') {
+      headline = `${maxCountryName} leads at ${(maxVal / 1000).toFixed(1)} Gt CO₂`;
+      const total = vals.reduce((a, b) => a + b, 0);
+      percent = total > 0 ? (maxVal / total) * 100 : null;
+      subline = `${(total / 1000).toFixed(1)} Gt total global emissions in ${year}`;
+    } else {
+      headline = `Global avg: ${avg.toFixed(1)} ${meta.unit}`;
+      percent = isPercent ? avg : null;
+      if (delta !== null)
+        subline = `${delta > 0 ? '+' : ''}${delta.toFixed(1)} since ${prevYear}`;
+    }
+
+    return { icon, headline, subline, percent, trend };
+  });
+
   // --- Selected country profile (all indicators) ----------------------------
 
   readonly selectedProfile = computed<CountryProfile | null>(() => {
@@ -207,10 +304,38 @@ export class AtlasStore {
     const byCode = this.indicatorsByCode();
     const idx = this.yearIndex();
     if (!country || !m) return null;
+
     const stats: CountryIndicatorStat[] = m.indicators.map((meta) => {
       const series = byCode[meta.code]?.countries[code] ?? [];
-      return { meta, series, value: idx >= 0 ? (series[idx] ?? null) : null };
+      const value = idx >= 0 ? (series[idx] ?? null) : null;
+
+      // Global percentile rank at selected year
+      let percentile: number | null = null;
+      if (value !== null) {
+        const allVals = this.countries()
+          .map((c) => byCode[meta.code]?.countries[c.code]?.[idx] ?? null)
+          .filter((v): v is number => v !== null)
+          .sort((a, b) => a - b);
+        const below = allVals.filter((v) => v <= value).length;
+        percentile = Math.round((below / allVals.length) * 100);
+      }
+
+      // 5-year trend direction
+      let trend: CountryIndicatorStat['trend'] = null;
+      if (idx >= 0) {
+        const window = series
+          .slice(Math.max(0, idx - 5), idx + 1)
+          .filter((v): v is number => v !== null);
+        if (window.length >= 2) {
+          const delta = (window[window.length - 1] ?? 0) - (window[0] ?? 0);
+          const threshold = (meta.max - meta.min) * 0.01;
+          trend = delta > threshold ? 'up' : delta < -threshold ? 'down' : 'flat';
+        }
+      }
+
+      return { meta, series, value, percentile, trend };
     });
+
     return { country, stats };
   });
 
