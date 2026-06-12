@@ -1,0 +1,50 @@
+// Design tokens — Sass maps as the single source of truth, projected to CSS
+// custom properties so components stay themeable at runtime.
+@use 'sass:map';
+
+$colors: (
+  'folder': #d8b26a,
+  'folder-edge': #c39a4f,
+  'paper': #fbf7ee,
+  'paper-edge': #efe7d4,
+  'ink': #2b2622,
+  'ink-soft': #6b6155,
+  'accent': #1f6f6b,
+  'accent-ink': #14504d,
+  'marker-yellow': #ffe45e,
+  'no-data': #e7dfce,
+  'shadow': rgba(40, 30, 12, 0.28),
+);
+
+$space: (
+  'xs': 0.25rem,
+  'sm': 0.5rem,
+  'md': 1rem,
+  'lg': 1.75rem,
+  'xl': 2.75rem,
+);
+
+$radius: (
+  'sm': 4px,
+  'md': 8px,
+);
+
+$type: (
+  'mono': ('IBM Plex Mono', 'SF Mono', 'Menlo', monospace),
+  'display': ('Arial Black', 'Helvetica Neue', system-ui, sans-serif),
+  'body': (system-ui, -apple-system, 'Segoe UI', sans-serif),
+);
+
+:root {
+  @each $name, $value in $colors {
+    --c-#{$name}: #{$value};
+  }
+  @each $name, $value in $space {
+    --space-#{$name}: #{$value};
+  }
+  --radius-sm: #{map.get($radius, 'sm')};
+  --radius-md: #{map.get($radius, 'md')};
+  --font-mono: #{map.get($type, 'mono')};
+  --font-display: #{map.get($type, 'display')};
+  --font-body: #{map.get($type, 'body')};
+}

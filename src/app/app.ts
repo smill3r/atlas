@@ -1,12 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AtlasPageComponent } from './features/atlas/atlas-page.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AtlasPageComponent],
+  template: `<atlas-page />`,
 })
-export class App {
-  protected readonly title = signal('atlas');
-}
+export class App {}

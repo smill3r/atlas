@@ -1,0 +1,29 @@
+// Reusable analog-feel effects.
+
+// A sheet of paper: warm fill, soft long shadow, faint grain.
+@mixin paper-surface {
+  background-color: var(--c-paper);
+  background-image:
+    radial-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px),
+    radial-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px);
+  background-size: 4px 4px;
+  background-position: 0 0, 2px 2px;
+  box-shadow:
+    0 1px 0 var(--c-paper-edge),
+    0 18px 40px -18px var(--c-shadow);
+}
+
+// Marker-drawn underline / highlight stroke.
+@mixin marker-underline($color: var(--c-marker-yellow)) {
+  background-image: linear-gradient(120deg, $color 0%, $color 100%);
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 100% 0.42em;
+}
+
+// Honor reduced-motion in one place.
+@mixin motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}

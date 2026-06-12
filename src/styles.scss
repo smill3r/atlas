@@ -1,1 +1,548 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'styles/tokens';
+@use 'styles/mixins' as *;
+
+// ---------------------------------------------------------------------------
+// Base
+// ---------------------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-ink);
+  background-color: var(--c-folder);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 38px,
+      rgba(0, 0, 0, 0.025) 38px 39px
+    ),
+    linear-gradient(180deg, var(--c-folder) 0%, var(--c-folder-edge) 100%);
+}
+
+// ---------------------------------------------------------------------------
+// Folder + paper
+// ---------------------------------------------------------------------------
+.folder {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(1rem, 4vw, 3.5rem);
+}
+
+.paper {
+  position: relative;
+  width: min(1180px, 100%);
+  padding: var(--space-xl) clamp(1.25rem, 3vw, 2.75rem) var(--space-lg);
+  border-radius: var(--radius-md);
+  transform: rotate(-0.35deg);
+  @include paper-surface;
+
+  &__clip {
+    position: absolute;
+    top: -14px;
+    left: 64px;
+    width: 26px;
+    height: 74px;
+    border: 4px solid #9aa3ad;
+    border-radius: 14px;
+    border-bottom-color: transparent;
+    transform: rotate(8deg);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--c-paper-edge);
+    padding-bottom: var(--space-md);
+  }
+
+  &__eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  &__title {
+    margin: 0.2rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    width: fit-content;
+    @include marker-underline;
+  }
+
+  &__sub {
+    margin: 0.5rem 0 0;
+    color: var(--c-ink-soft);
+    font-size: 0.92rem;
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    align-items: center;
+    margin: var(--space-md) 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Indicator switcher
+// ---------------------------------------------------------------------------
+.switcher {
+  border: 0;
+  margin: 0;
+  padding: 0;
+
+  &__legend {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+    padding: 0;
+  }
+
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+  }
+
+  &__option {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: 0.4rem 0.7rem;
+    border: 1.5px solid var(--c-ink);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--c-ink);
+    cursor: pointer;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &--active {
+      background: var(--c-ink);
+      color: var(--c-paper);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Year scrubber
+// ---------------------------------------------------------------------------
+.scrubber {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  &__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  &__range {
+    width: clamp(140px, 22vw, 260px);
+    accent-color: var(--c-accent);
+  }
+
+  &__value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    min-width: 3ch;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Stage + map
+// ---------------------------------------------------------------------------
+.stage {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.world-map {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  &__country {
+    fill: var(--c-no-data);
+    stroke: var(--c-paper);
+    stroke-width: 0.4;
+    cursor: pointer;
+    transition:
+      fill 0.45s ease,
+      stroke 0.2s ease,
+      stroke-width 0.2s ease;
+    outline: none;
+
+    &:hover,
+    &--hovered {
+      stroke: var(--c-ink);
+      stroke-width: 1.1;
+    }
+
+    &--selected {
+      stroke: var(--c-ink);
+      stroke-width: 1.6;
+    }
+
+    &:focus-visible {
+      stroke: var(--c-accent-ink);
+      stroke-width: 1.6;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Legend + hover readout
+// ---------------------------------------------------------------------------
+.legend {
+  position: absolute;
+  left: var(--space-md);
+  bottom: var(--space-md);
+  background: rgba(251, 247, 238, 0.86);
+  backdrop-filter: blur(2px);
+  border: 1px solid var(--c-paper-edge);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+
+  &__unit {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--c-ink-soft);
+    margin-bottom: var(--space-xs);
+  }
+
+  &__rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  &__swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+.readout {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: rgba(251, 247, 238, 0.86);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-paper-edge);
+  animation: fade-in 0.2s ease both;
+}
+
+// ---------------------------------------------------------------------------
+// Search
+// ---------------------------------------------------------------------------
+.search {
+  position: relative;
+  min-width: 240px;
+
+  &__label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+    margin-bottom: var(--space-xs);
+  }
+
+  &__input {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    padding: 0.5rem 0.7rem;
+    border: 1.5px solid var(--c-ink);
+    border-radius: var(--radius-sm);
+    background: var(--c-paper);
+  }
+
+  &__results {
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    background: var(--c-paper);
+    border: 1.5px solid var(--c-ink);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 12px 24px -12px var(--c-shadow);
+    animation: fade-in 0.18s ease both;
+  }
+
+  &__pick {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.88rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--c-marker-yellow);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Overlays (load states)
+// ---------------------------------------------------------------------------
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: var(--space-sm);
+  justify-items: center;
+  text-align: center;
+  font-family: var(--font-mono);
+  background: rgba(251, 247, 238, 0.9);
+  animation: fade-in 0.25s ease both;
+
+  &__spinner {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 3px solid var(--c-paper-edge);
+    border-top-color: var(--c-accent);
+    @include motion-safe {
+      animation: spin 0.9s linear infinite;
+    }
+  }
+
+  &__retry {
+    font-family: var(--font-mono);
+    padding: 0.4rem 0.9rem;
+    border: 1.5px solid var(--c-ink);
+    border-radius: var(--radius-sm);
+    background: var(--c-ink);
+    color: var(--c-paper);
+    cursor: pointer;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Country sheet
+// ---------------------------------------------------------------------------
+.sheet {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: min(330px, calc(100% - 2 * var(--space-md)));
+  max-height: calc(100% - 2 * var(--space-md));
+  overflow-y: auto;
+  background: var(--c-paper);
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 40px -16px var(--c-shadow);
+  padding: var(--space-md);
+  animation: sheet-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    border-bottom: 2px solid var(--c-paper-edge);
+    padding-bottom: var(--space-sm);
+  }
+
+  &__eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  &__title {
+    margin: 0.15rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.05;
+  }
+
+  &__meta {
+    margin: 0.2rem 0 0;
+    font-size: 0.8rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__close {
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--c-ink-soft);
+
+    &:hover {
+      color: var(--c-ink);
+    }
+  }
+
+  &__stats {
+    list-style: none;
+    margin: var(--space-sm) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-md);
+  }
+}
+
+.stat {
+  animation: stat-in 0.4s ease both;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.06s * $i};
+    }
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__value {
+    margin: 0.1rem 0 0.3rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+
+  &__number {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+  }
+
+  &__unit {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__nodata {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--c-ink-soft);
+    font-style: italic;
+  }
+}
+
+.sparkline {
+  width: 100%;
+  height: 52px;
+
+  &__line {
+    fill: none;
+    stroke: var(--c-accent);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &__marker {
+    stroke: var(--c-marker-yellow);
+    stroke-width: 2;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Keyframes
+// ---------------------------------------------------------------------------
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px) rotate(0.4deg);
+  }
+}
+
+@keyframes stat-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
