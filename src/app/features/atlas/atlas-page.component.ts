@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { DecimalPipe } from '@angular/common';
 import { AtlasStore } from '../../core/state/atlas-store';
 import { WorldMapComponent } from '../map/world-map.component';
+import { GlobeMapComponent } from '../map/globe-map.component';
 import { IndicatorSwitcherComponent } from '../map/indicator-switcher.component';
 import { MapLegendComponent } from '../map/map-legend.component';
 import { CountrySearchComponent } from '../map/country-search.component';
@@ -14,6 +15,7 @@ import { CountrySheetComponent } from '../country-sheet/country-sheet.component'
   imports: [
     DecimalPipe,
     WorldMapComponent,
+    GlobeMapComponent,
     IndicatorSwitcherComponent,
     MapLegendComponent,
     CountrySearchComponent,
@@ -61,6 +63,27 @@ import { CountrySheetComponent } from '../country-sheet/country-sheet.component'
               <output class="scrubber__value">{{ year }}</output>
             </div>
           }
+
+          <div class="modetoggle" role="group" aria-label="Map style">
+            <button
+              type="button"
+              class="modetoggle__btn"
+              [class.modetoggle__btn--active]="store.mapMode() === 'flat'"
+              [attr.aria-pressed]="store.mapMode() === 'flat'"
+              (click)="store.mapMode.set('flat')"
+            >
+              Flat
+            </button>
+            <button
+              type="button"
+              class="modetoggle__btn"
+              [class.modetoggle__btn--active]="store.mapMode() === 'globe'"
+              [attr.aria-pressed]="store.mapMode() === 'globe'"
+              (click)="store.mapMode.set('globe')"
+            >
+              Globe
+            </button>
+          </div>
         </div>
 
         @if (store.activeIndicator(); as meta) {
@@ -71,15 +94,26 @@ import { CountrySheetComponent } from '../country-sheet/country-sheet.component'
           </section>
         }
 
-        <div class="stage">
-          <atlas-world-map
-            [shapes]="store.shapes()"
-            [colors]="store.colorByNumericId()"
-            [selectedNumericId]="store.selectedNumericId()"
-            [hoveredNumericId]="store.hoveredNumericId()"
-            (select)="store.selectCountryByNumericId($event)"
-            (hover)="store.hover($event)"
-          />
+        <div class="stage" [class.stage--globe]="store.mapMode() === 'globe'">
+          @if (store.mapMode() === 'globe') {
+            <atlas-globe-map
+              [features]="store.features()"
+              [colors]="store.colorByNumericId()"
+              [selectedNumericId]="store.selectedNumericId()"
+              [hoveredNumericId]="store.hoveredNumericId()"
+              (select)="store.selectCountryByNumericId($event)"
+              (hover)="store.hover($event)"
+            />
+          } @else {
+            <atlas-world-map
+              [shapes]="store.shapes()"
+              [colors]="store.colorByNumericId()"
+              [selectedNumericId]="store.selectedNumericId()"
+              [hoveredNumericId]="store.hoveredNumericId()"
+              (select)="store.selectCountryByNumericId($event)"
+              (hover)="store.hover($event)"
+            />
+          }
 
           @if (store.activeIndicator(); as meta) {
             <atlas-map-legend [rows]="store.legend()" [unit]="meta.unit" />

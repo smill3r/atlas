@@ -41,6 +41,18 @@ export class AtlasStore {
   readonly shapes = toSignal(this.projection.getCountryShapes(), {
     initialValue: [],
   });
+  readonly features = toSignal(this.projection.getCountryFeatures(), {
+    initialValue: [],
+  });
+
+  /** Flat choropleth vs spinning globe; defaults to globe on small screens. */
+  readonly mapMode = signal<'flat' | 'globe'>(
+    typeof window !== 'undefined' && window.innerWidth <= 720 ? 'globe' : 'flat',
+  );
+
+  toggleMapMode(): void {
+    this.mapMode.update((m) => (m === 'flat' ? 'globe' : 'flat'));
+  }
 
   /**
    * All indicator datasets, loaded once: manifest -> forkJoin over indicators.

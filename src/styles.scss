@@ -226,6 +226,93 @@ body {
 }
 
 // ---------------------------------------------------------------------------
+// Mode toggle (flat / globe)
+// ---------------------------------------------------------------------------
+.modetoggle {
+  display: inline-flex;
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+
+  &__btn {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--c-ink);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &--active {
+      background: var(--c-ink);
+      color: var(--c-paper);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Globe
+// ---------------------------------------------------------------------------
+.stage--globe {
+  display: grid;
+  place-items: center;
+  padding: var(--space-md) 0;
+}
+
+.globe {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  touch-action: none; // let the globe consume drags instead of scrolling
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &__ocean {
+    fill: #eaf0ee;
+    stroke: var(--c-paper-edge);
+    stroke-width: 1;
+  }
+
+  &__graticule {
+    fill: none;
+    stroke: rgba(40, 30, 12, 0.08);
+    stroke-width: 0.5;
+  }
+
+  &__country {
+    fill: var(--c-no-data);
+    stroke: var(--c-paper);
+    stroke-width: 0.4;
+    cursor: pointer;
+    transition:
+      fill 0.45s ease,
+      stroke-width 0.2s ease;
+    outline: none;
+
+    &:hover,
+    &--hovered {
+      stroke: var(--c-ink);
+      stroke-width: 1.1;
+    }
+
+    &--selected {
+      stroke: var(--c-ink);
+      stroke-width: 1.6;
+    }
+
+    &:focus-visible {
+      stroke: var(--c-accent-ink);
+      stroke-width: 1.6;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Legend + hover readout
 // ---------------------------------------------------------------------------
 .legend {
