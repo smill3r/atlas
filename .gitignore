@@ -1,0 +1,25 @@
+# Planning artifacts & assistant tooling — kept out of history
+docs/superpowers/
+.claude/
+
+# Oversized dataset — out of scope this iteration, too large for git
+datasets/WDI/WB_WDI_WIDEF.csv
+
+# OS
+.DS_Store
+
+# Angular
+/dist
+/.angular
+/node_modules
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+Thumbs.db
