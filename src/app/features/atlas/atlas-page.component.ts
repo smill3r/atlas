@@ -63,6 +63,14 @@ import { CountrySheetComponent } from '../country-sheet/country-sheet.component'
           }
         </div>
 
+        @if (store.activeIndicator(); as meta) {
+          <section class="brief" aria-live="polite">
+            <h2 class="brief__name">{{ meta.name }}</h2>
+            <p class="brief__desc">{{ meta.description }}</p>
+            <p class="brief__source">Source: {{ shortSource(meta.source) }}</p>
+          </section>
+        }
+
         <div class="stage">
           <atlas-world-map
             [shapes]="store.shapes()"
@@ -120,5 +128,10 @@ export class AtlasPageComponent {
 
   protected reload(): void {
     location.reload();
+  }
+
+  /** World Bank source strings trail metadata (uri, dates); keep the org name. */
+  protected shortSource(source: string): string {
+    return source.split(/,|;|\buri:/i)[0]?.trim() ?? source;
   }
 }
