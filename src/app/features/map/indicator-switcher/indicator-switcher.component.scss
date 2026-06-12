@@ -1,0 +1,85 @@
+.switcher {
+  border: 0;
+  margin: 0;
+  padding: 0;
+
+  &__legend {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+    padding: 0;
+  }
+
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-xs);
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: 0.4rem 0.7rem;
+    border: 1.5px solid var(--c-ink);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--c-ink);
+    cursor: pointer;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &--active {
+      background: var(--c-ink);
+      color: var(--c-paper);
+    }
+  }
+
+  &__icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive — horizontal scroll strip on mobile
+// ---------------------------------------------------------------------------
+@media (max-width: 720px) {
+  .switcher {
+    &__options {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px; // prevent focus ring clipping
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    &__option {
+      flex-shrink: 0;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-height: 44px; // minimum touch target
+      padding: 0.45rem 0.65rem;
+      font-size: 0.75rem;
+    }
+
+    &__icon {
+      font-size: 1.2rem;
+    }
+  }
+}

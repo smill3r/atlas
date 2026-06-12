@@ -1,0 +1,51 @@
+.globe {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  touch-action: none; // let the globe consume drags instead of the page scrolling
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &__ocean {
+    fill: #eaf0ee;
+    stroke: var(--c-paper-edge);
+    stroke-width: 1;
+  }
+
+  &__graticule {
+    fill: none;
+    stroke: rgba(40, 30, 12, 0.08);
+    stroke-width: 0.5;
+  }
+
+  &__country {
+    fill: var(--c-no-data);
+    stroke: var(--c-paper);
+    stroke-width: 0.4;
+    cursor: pointer;
+    transition:
+      fill 0.45s ease,
+      stroke-width 0.2s ease;
+    outline: none;
+
+    &:hover,
+    &--hovered {
+      stroke: var(--c-ink);
+      stroke-width: 1.1;
+    }
+
+    &--selected {
+      stroke: var(--c-ink);
+      stroke-width: 1.6;
+    }
+
+    &:focus-visible {
+      stroke: var(--c-accent-ink);
+      stroke-width: 1.6;
+    }
+  }
+}

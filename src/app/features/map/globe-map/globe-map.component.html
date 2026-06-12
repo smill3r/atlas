@@ -1,0 +1,39 @@
+<svg
+  class="globe"
+  [attr.viewBox]="'0 0 ' + viewboxSize + ' ' + viewboxSize"
+  role="group"
+  aria-label="Spinning globe. Drag to rotate; use the search box to find a country."
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp()"
+  (pointerleave)="onPointerUp()"
+>
+  <circle
+    class="globe__ocean"
+    [attr.cx]="viewboxSize / 2"
+    [attr.cy]="viewboxSize / 2"
+    [attr.r]="globeRadius"
+  />
+  <path class="globe__graticule" [attr.d]="graticulePathData()" />
+  <g class="globe__countries">
+    @for (shape of globeShapes(); track shape.numericId) {
+      <path
+        class="globe__country"
+        [class.globe__country--has-data]="colors().has(shape.numericId)"
+        [class.globe__country--selected]="shape.numericId === selectedNumericId()"
+        [class.globe__country--hovered]="shape.numericId === hoveredNumericId()"
+        [attr.d]="shape.d"
+        [style.fill]="colors().get(shape.numericId) || null"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="shape.name"
+        (click)="onCountryClick(shape.numericId)"
+        (keydown.enter)="select.emit(shape.numericId)"
+        (mouseenter)="hover.emit(shape.numericId)"
+        (mouseleave)="hover.emit(null)"
+        (focus)="hover.emit(shape.numericId)"
+        (blur)="hover.emit(null)"
+      />
+    }
+  </g>
+</svg>

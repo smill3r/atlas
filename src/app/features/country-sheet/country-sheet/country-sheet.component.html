@@ -1,0 +1,63 @@
+@let p = profile();
+@if (p) {
+  <aside class="sheet" role="region" [attr.aria-label]="p.country.name + ' indicators'">
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <header class="sheet__header">
+      <div>
+        <p class="sheet__eyebrow">Technical sheet · {{ year() }}</p>
+        <h2 class="sheet__title">{{ p.country.name }}</h2>
+        <p class="sheet__meta">{{ p.country.region }} · {{ p.country.incomeGroup }}</p>
+      </div>
+      <button type="button" class="sheet__close" aria-label="Close sheet" (click)="close.emit()">
+        ×
+      </button>
+    </header>
+
+    <ul class="sheet__stats">
+      @for (stat of p.stats; track stat.meta.code) {
+        <li class="stat">
+          <div class="stat__row">
+            <div class="stat__info">
+              <p class="stat__name">{{ stat.meta.name }}</p>
+              <p class="stat__value">
+                @if (stat.value !== null) {
+                  <span class="stat__number">{{ stat.value | number: '1.0-1' }}</span>
+                  <span class="stat__unit">{{ stat.meta.unit }}</span>
+                  @if (stat.trend) {
+                    <span
+                      class="stat__trend"
+                      [attr.data-trend]="stat.trend"
+                      aria-hidden="true"
+                    >
+                      {{ stat.trend === 'up' ? '↑' : stat.trend === 'down' ? '↓' : '→' }}
+                    </span>
+                  }
+                } @else {
+                  <span class="stat__nodata">no data for {{ year() }}</span>
+                }
+              </p>
+            </div>
+            @if (stat.percentile !== null) {
+              <p class="stat__pct" [attr.aria-label]="stat.percentile + 'th global percentile'">
+                {{ stat.percentile }}<span>th</span>
+              </p>
+            }
+          </div>
+          <atlas-bullet-bar
+            [value]="stat.value"
+            [min]="stat.meta.min"
+            [max]="stat.meta.max"
+            [breaks]="stat.meta.breaks"
+            [label]="stat.meta.name + ': ' + (stat.value ?? 'no data')"
+          />
+          <atlas-sparkline
+            [values]="stat.series"
+            [markerIndex]="markerIndex()"
+            [label]="stat.meta.name + ' trend over time'"
+          />
+        </li>
+      }
+    </ul>
+  </aside>
+}

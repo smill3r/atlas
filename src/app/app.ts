@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AtlasPageComponent } from './features/atlas/atlas-page.component';
+import { AtlasPageComponent } from './features/atlas/atlas-page/atlas-page.component';
 
 @Component({
   selector: 'app-root',

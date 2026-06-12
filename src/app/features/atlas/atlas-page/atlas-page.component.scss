@@ -1,0 +1,323 @@
+@use 'styles/mixins' as *;
+
+// ---------------------------------------------------------------------------
+// Folder + paper
+// ---------------------------------------------------------------------------
+.folder {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(1rem, 4vw, 3.5rem);
+}
+
+.paper {
+  position: relative;
+  width: min(1180px, 100%);
+  padding: var(--space-xl) clamp(1.25rem, 3vw, 2.75rem) var(--space-lg);
+  border-radius: var(--radius-md);
+  transform: rotate(-0.35deg);
+
+  @include paper-surface;
+
+  &__clip {
+    position: absolute;
+    top: -14px;
+    left: 64px;
+    width: 26px;
+    height: 74px;
+    border: 4px solid #9aa3ad;
+    border-radius: 14px;
+    border-bottom-color: transparent;
+    transform: rotate(8deg);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--c-paper-edge);
+    padding-bottom: var(--space-md);
+  }
+
+  &__eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  &__source-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-bottom-color: var(--c-ink-soft);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-accent-ink);
+      outline-offset: 2px;
+      border-radius: 1px;
+    }
+  }
+
+  &__title {
+    margin: 0.2rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    width: fit-content;
+
+    @include marker-underline;
+  }
+
+  &__sub {
+    margin: 0.5rem 0 0;
+    color: var(--c-ink-soft);
+    font-size: 0.92rem;
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    align-items: center;
+    margin: var(--space-md) 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Year scrubber
+// ---------------------------------------------------------------------------
+.scrubber {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  &__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  &__range {
+    width: clamp(140px, 22vw, 260px);
+    accent-color: var(--c-accent);
+  }
+
+  &__value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    min-width: 3ch;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mode toggle (flat / globe)
+// ---------------------------------------------------------------------------
+.modetoggle {
+  display: inline-flex;
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+
+  &__btn {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--c-ink);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &--active {
+      background: var(--c-ink);
+      color: var(--c-paper);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Map stage
+// ---------------------------------------------------------------------------
+.stage {
+  position: relative;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+
+  &--globe {
+    display: grid;
+    place-items: center;
+    padding: var(--space-md) 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hover readout
+// ---------------------------------------------------------------------------
+.readout {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: rgba(251, 247, 238, 0.86);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-paper-edge);
+  animation: fade-in 0.2s ease both;
+}
+
+// ---------------------------------------------------------------------------
+// Load-state overlays
+// ---------------------------------------------------------------------------
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: var(--space-sm);
+  justify-items: center;
+  text-align: center;
+  font-family: var(--font-mono);
+  background: rgba(251, 247, 238, 0.9);
+  animation: fade-in 0.25s ease both;
+
+  &__spinner {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 3px solid var(--c-paper-edge);
+    border-top-color: var(--c-accent);
+
+    @include motion-safe {
+      animation: spin 0.9s linear infinite;
+    }
+  }
+
+  &__retry {
+    font-family: var(--font-mono);
+    padding: 0.4rem 0.9rem;
+    border: 1.5px solid var(--c-ink);
+    border-radius: var(--radius-sm);
+    background: var(--c-ink);
+    color: var(--c-paper);
+    cursor: pointer;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Indicator brief (context for the active indicator)
+// ---------------------------------------------------------------------------
+.brief {
+  margin: 0 0 var(--space-md);
+  padding-left: var(--space-md);
+  border-left: 3px solid var(--c-marker-yellow);
+  animation: fade-in 0.25s ease both;
+
+  &__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  &__desc {
+    margin: 0.25rem 0 0;
+    max-width: 70ch;
+    font-size: 0.88rem;
+    color: var(--c-ink-soft);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__source {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--c-ink-soft);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive — phones and narrow viewports
+// ---------------------------------------------------------------------------
+@media (max-width: 720px) {
+  .folder {
+    padding: var(--space-xs);
+    align-items: stretch;
+  }
+
+  // Paper becomes a full-width flex column so we can reorder sections.
+  .paper {
+    transform: none;
+    padding: var(--space-md) var(--space-md) 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+
+    &__clip {
+      left: 32px;
+    }
+
+    &__head {
+      order: 1;
+      flex-shrink: 0;
+    }
+
+    &__controls {
+      order: 4;
+      flex-shrink: 0;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      border-top: 1px solid var(--c-paper-edge);
+    }
+  }
+
+  // Hero stat card directly below header (targets child component host element).
+  atlas-hero-stat {
+    order: 2;
+    flex-shrink: 0;
+  }
+
+  // Map stage expands to fill available space.
+  .stage {
+    order: 3;
+    flex: 1 1 0;
+    min-height: 44dvh;
+  }
+
+  // Brief section below controls.
+  .brief {
+    order: 5;
+    flex-shrink: 0;
+    margin-bottom: var(--space-md);
+  }
+
+  .modetoggle__btn {
+    min-height: 44px;
+    padding: 0.5rem 0.9rem;
+  }
+
+  .scrubber__range {
+    min-height: 44px;
+    width: clamp(120px, 35vw, 200px);
+    cursor: pointer;
+  }
+}

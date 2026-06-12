@@ -1,0 +1,20 @@
+<svg
+  class="sparkline"
+  [attr.viewBox]="'0 0 ' + viewboxWidth + ' ' + viewboxHeight"
+  preserveAspectRatio="none"
+  role="img"
+  [attr.aria-label]="label()"
+>
+  @for (segment of segments(); track $index) {
+    <polyline class="sparkline__line" [attr.points]="segment" />
+  }
+  @if (markerX() !== null) {
+    <line
+      class="sparkline__marker"
+      [attr.x1]="markerX()"
+      [attr.x2]="markerX()"
+      y1="0"
+      [attr.y2]="viewboxHeight"
+    />
+  }
+</svg>

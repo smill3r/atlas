@@ -1,0 +1,17 @@
+<fieldset class="switcher">
+  <legend class="switcher__legend">Indicator</legend>
+  <div class="switcher__options">
+    @for (indicator of indicators(); track indicator.code) {
+      <button
+        type="button"
+        class="switcher__option"
+        [class.switcher__option--active]="indicator.code === selectedCode()"
+        [attr.aria-pressed]="indicator.code === selectedCode()"
+        (click)="select.emit(indicator.code)"
+      >
+        <span class="switcher__icon" aria-hidden="true">{{ icon(indicator.code) }}</span>
+        <span class="switcher__label">{{ shortName(indicator) }}</span>
+      </button>
+    }
+  </div>
+</fieldset>

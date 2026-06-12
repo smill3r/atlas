@@ -1,0 +1,16 @@
+@if (stat(); as s) {
+  <div class="herostat" [attr.data-trend]="s.trend" aria-live="polite">
+    <span class="herostat__icon" aria-hidden="true">{{ s.icon }}</span>
+    <div class="herostat__body">
+      <p class="herostat__headline">{{ s.headline }}</p>
+      @if (s.subline) {
+        <p class="herostat__sub">{{ s.subline }}</p>
+      }
+      @if (s.percent !== null) {
+        <div class="herostat__bar" aria-hidden="true">
+          <div class="herostat__fill" [style.width.%]="clamp(s.percent)"></div>
+        </div>
+      }
+    </div>
+  </div>
+}

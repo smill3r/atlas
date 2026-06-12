@@ -1,0 +1,143 @@
+<div class="folder">
+  <div class="paper">
+    <span class="paper__clip" aria-hidden="true"></span>
+
+    <header class="paper__head">
+      <div class="paper__titleblock">
+        <p class="paper__eyebrow">
+          <a
+            class="paper__source-link"
+            href="https://data.worldbank.org/indicator"
+            target="_blank"
+            rel="noopener noreferrer"
+          >World Development Indicators · World Bank</a>
+        </p>
+        <h1 class="paper__title">The State of the World</h1>
+        <p class="paper__sub">
+          Six decades of World Bank data — electricity, emissions, internet, and
+          education — mapped across 200&nbsp;+ countries.
+          Pick an indicator, scrub the year slider, and click any country to open its detail sheet.
+        </p>
+      </div>
+      <atlas-country-search
+        [query]="store.searchQuery()"
+        [results]="store.searchResults()"
+        (queryChange)="store.setSearch($event)"
+        (pick)="store.selectCountryByCode($event)"
+      />
+    </header>
+
+    <!-- Hero stat card: changes with indicator + year; reveals on scroll on mobile -->
+    <atlas-hero-stat atlasReveal [stat]="store.heroStat()" />
+
+    <!-- Map controls — flex-reordered on mobile to appear below the stage -->
+    <div class="paper__controls">
+      <atlas-indicator-switcher
+        [indicators]="store.manifest()?.indicators ?? []"
+        [selectedCode]="store.selectedIndicatorCode()"
+        (select)="store.selectIndicator($event)"
+      />
+      @if (store.selectedYear(); as year) {
+        <div class="scrubber">
+          <label class="scrubber__label" for="year">Year</label>
+          <input
+            id="year"
+            class="scrubber__range"
+            type="range"
+            [min]="store.manifest()?.yearStart ?? 1960"
+            [max]="store.manifest()?.yearEnd ?? 2025"
+            [value]="year"
+            (input)="store.selectYear($any($event.target).valueAsNumber)"
+          />
+          <output class="scrubber__value">{{ year }}</output>
+        </div>
+      }
+
+      <div class="modetoggle" role="group" aria-label="Map style">
+        <button
+          type="button"
+          class="modetoggle__btn"
+          [class.modetoggle__btn--active]="store.mapMode() === 'flat'"
+          [attr.aria-pressed]="store.mapMode() === 'flat'"
+          (click)="store.mapMode.set('flat')"
+        >
+          Flat
+        </button>
+        <button
+          type="button"
+          class="modetoggle__btn"
+          [class.modetoggle__btn--active]="store.mapMode() === 'globe'"
+          [attr.aria-pressed]="store.mapMode() === 'globe'"
+          (click)="store.mapMode.set('globe')"
+        >
+          Globe
+        </button>
+      </div>
+    </div>
+
+    <!-- Map stage -->
+    <div class="stage" [class.stage--globe]="store.mapMode() === 'globe'">
+      @if (store.mapMode() === 'globe') {
+        <atlas-globe-map
+          [features]="store.features()"
+          [colors]="store.colorByNumericId()"
+          [selectedNumericId]="store.selectedNumericId()"
+          [hoveredNumericId]="store.hoveredNumericId()"
+          (select)="store.selectCountryByNumericId($event)"
+          (hover)="store.hover($event)"
+        />
+      } @else {
+        <atlas-world-map
+          [shapes]="store.shapes()"
+          [colors]="store.colorByNumericId()"
+          [selectedNumericId]="store.selectedNumericId()"
+          [hoveredNumericId]="store.hoveredNumericId()"
+          (select)="store.selectCountryByNumericId($event)"
+          (hover)="store.hover($event)"
+        />
+      }
+
+      @if (store.activeIndicator(); as meta) {
+        <atlas-map-legend [rows]="store.legend()" [unit]="meta.unit" />
+      }
+
+      @if (store.hoveredInfo(); as info) {
+        <p class="readout" aria-live="polite">
+          <strong>{{ info.name }}</strong>
+          @if (info.value !== null) {
+            — {{ info.value | number: '1.0-1' }} {{ info.unit }}
+          } @else {
+            — no data
+          }
+        </p>
+      }
+
+      @if (isLoading()) {
+        <div class="overlay overlay--loading" role="status">
+          <span class="overlay__spinner" aria-hidden="true"></span>
+          <p>Drawing the world…</p>
+        </div>
+      } @else if (store.loadStatus() === 'error') {
+        <div class="overlay overlay--error" role="alert">
+          <p>Couldn't load the data.</p>
+          <button type="button" class="overlay__retry" (click)="reload()">Retry</button>
+        </div>
+      }
+    </div>
+
+    @if (store.activeIndicator(); as meta) {
+      <section class="brief" aria-live="polite">
+        <h2 class="brief__name">{{ meta.name }}</h2>
+        <p class="brief__desc">{{ meta.description }}</p>
+        <p class="brief__source">Source: {{ shortSource(meta.source) }}</p>
+      </section>
+    }
+
+    <atlas-country-sheet
+      [profile]="store.selectedProfile()"
+      [year]="store.selectedYear()"
+      [yearStart]="store.manifest()?.yearStart ?? null"
+      (close)="store.closeSheet()"
+    />
+  </div>
+</div>

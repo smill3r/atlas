@@ -1,0 +1,193 @@
+.sheet {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: min(330px, calc(100% - 2 * var(--space-md)));
+  max-height: calc(100% - 2 * var(--space-md));
+  overflow-y: auto;
+  background: var(--c-paper);
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 40px -16px var(--c-shadow);
+  padding: var(--space-md);
+  animation: sheet-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    border-bottom: 2px solid var(--c-paper-edge);
+    padding-bottom: var(--space-sm);
+  }
+
+  &__eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  &__title {
+    margin: 0.15rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.05;
+  }
+
+  &__meta {
+    margin: 0.2rem 0 0;
+    font-size: 0.8rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__close {
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--c-ink-soft);
+
+    &:hover {
+      color: var(--c-ink);
+    }
+  }
+
+  // Drag handle shown only on mobile as a bottom-sheet affordance.
+  &__handle {
+    width: 40px;
+    height: 4px;
+    background: var(--c-paper-edge);
+    border-radius: 2px;
+    margin: 0 auto var(--space-sm);
+    display: none;
+  }
+
+  &__stats {
+    list-style: none;
+    margin: var(--space-sm) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-md);
+  }
+}
+
+.stat {
+  animation: stat-in 0.4s ease both;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.06s * $i};
+    }
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__value {
+    margin: 0.1rem 0 0.2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+
+  &__number {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+  }
+
+  &__unit {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__trend {
+    font-size: 1rem;
+    line-height: 1;
+
+    &[data-trend='up'] {
+      color: var(--c-accent);
+    }
+
+    &[data-trend='down'] {
+      color: #f7414f;
+    }
+
+    &[data-trend='flat'] {
+      color: var(--c-ink-soft);
+    }
+  }
+
+  &__pct {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--c-accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 1.1rem;
+
+    span {
+      font-size: 0.62rem;
+      color: var(--c-ink-soft);
+      font-weight: 400;
+    }
+  }
+
+  &__nodata {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--c-ink-soft);
+    font-style: italic;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Responsive — bottom sheet on mobile
+// ---------------------------------------------------------------------------
+@media (max-width: 720px) {
+  .sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 20;
+    width: 100%;
+    max-height: 75dvh;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-bottom: 0;
+    animation: sheet-up 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    &__close {
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    &__handle {
+      display: block;
+    }
+  }
+}

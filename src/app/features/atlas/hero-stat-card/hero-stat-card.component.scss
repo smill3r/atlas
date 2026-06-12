@@ -1,0 +1,69 @@
+.herostat {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-sm) 0;
+  background: rgba(255, 228, 94, 0.18);
+  border-left: 3px solid var(--c-marker-yellow);
+  border-radius: var(--radius-sm);
+  animation: fade-in 0.4s ease both;
+
+  &[data-trend='down'] {
+    background: rgba(247, 65, 79, 0.08);
+    border-left-color: #f7414f;
+  }
+
+  &__icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__headline {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(0.88rem, 2.5vw, 1.05rem);
+    line-height: 1.25;
+  }
+
+  &__sub {
+    margin: 0.2rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--c-ink-soft);
+  }
+
+  &__bar {
+    height: 5px;
+    background: var(--c-paper-edge);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: var(--space-xs);
+  }
+
+  &__fill {
+    height: 100%;
+    background: var(--c-accent);
+    border-radius: 3px;
+    transition: width 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &[data-trend='down'] &__fill {
+    background: #f7414f;
+  }
+}
+
+// Always visible on mobile — skip the scroll-reveal animation delay.
+@media (max-width: 720px) {
+  .herostat {
+    opacity: 1;
+    transform: none;
+  }
+}

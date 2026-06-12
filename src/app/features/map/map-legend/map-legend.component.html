@@ -1,0 +1,17 @@
+<div class="legend">
+  <span class="legend__unit">{{ unit() }}</span>
+  <ul class="legend__rows">
+    @for (row of rows(); track row.color) {
+      <li class="legend__row">
+        <span class="legend__swatch" [style.background]="row.color"></span>
+        <span class="legend__range">
+          {{ row.from | number: '1.0-1' }}@if (row.to !== null) {
+            – {{ row.to | number: '1.0-1' }}
+          } @else {
+            +
+          }
+        </span>
+      </li>
+    }
+  </ul>
+</div>
