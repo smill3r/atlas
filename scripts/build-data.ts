@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { INDICATOR_SOURCES } from './lib/indicator-config';
 import { parseIndicatorCsv } from './lib/parse-indicator-csv';
 import { parseCountryMetadata } from './lib/parse-country-metadata';
@@ -14,8 +15,9 @@ import type {
   IndicatorData,
 } from '../src/app/core/data/models';
 
-const DATA_DIR = 'datasets';
-const OUT_DIR = 'src/assets/data';
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const DATA_DIR = resolve(ROOT, 'datasets');
+const OUT_DIR = resolve(ROOT, 'src/assets/data');
 const BUCKETS = 6;
 
 function read(dir: string, file: string): string {
@@ -45,8 +47,10 @@ function main(): void {
     const allValues: (number | null)[] = [];
 
     for (const row of rows) {
-      allValues.push(...row.values);
       if (isCountry(row.code)) {
+        // Only real-country values define the color scale; aggregates such as
+        // the World total would otherwise blow out the max and skew the breaks.
+        allValues.push(...row.values);
         countries[row.code] = row.values;
         if (!countriesByCode.has(row.code)) {
           const numericId = alpha3ToNumericId(row.code);

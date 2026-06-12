@@ -8,14 +8,10 @@ describe('computeScale', () => {
     expect(max).toBe(9);
   });
 
-  it('produces (buckets - 1) interior break points', () => {
+  it('produces (buckets - 1) interior break points by linear interpolation', () => {
     const values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     const { breaks } = computeScale(values, 5);
-    expect(breaks).toHaveLength(4);
-    // breaks are ascending and within [min, max]
-    expect(breaks).toEqual([...breaks].sort((a, b) => a - b));
-    expect(breaks[0]).toBeGreaterThanOrEqual(0);
-    expect(breaks[breaks.length - 1]).toBeLessThanOrEqual(9);
+    expect(breaks).toEqual([1.8, 3.6, 5.4, 7.2]);
   });
 
   it('returns empty breaks and zeroed min/max when no finite values exist', () => {

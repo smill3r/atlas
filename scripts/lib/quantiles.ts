@@ -14,8 +14,9 @@ export function computeScale(values: (number | null)[], buckets: number): Scale 
     return { min: 0, max: 0, breaks: [] };
   }
 
-  const min = finite[0]!;
-  const max = finite[finite.length - 1]!;
+  const round = (n: number): number => Number(n.toFixed(4));
+  const min = round(finite[0]!);
+  const max = round(finite[finite.length - 1]!);
 
   const breaks: number[] = [];
   for (let i = 1; i < buckets; i++) {
