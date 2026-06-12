@@ -5,8 +5,21 @@ import { App } from './app';
 import { INDICATOR_REPOSITORY } from './core/data/indicator-repository';
 import { StaticHttpIndicatorRepository } from './core/data/static-http-indicator-repository';
 
+// JSDOM does not implement IntersectionObserver; stub it so RevealDirective
+// can construct without throwing in the test environment.
+class IntersectionObserverStub {
+  observe(): void {}
+  disconnect(): void {}
+}
+
 describe('App', () => {
   beforeEach(async () => {
+    Object.defineProperty(window, 'IntersectionObserver', {
+      writable: true,
+      configurable: true,
+      value: IntersectionObserverStub,
+    });
+
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
