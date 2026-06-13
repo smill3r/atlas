@@ -16,14 +16,14 @@
         <p class="paper__sub">
           Six decades of World Bank data — electricity, emissions, internet, and
           education — mapped across 200&nbsp;+ countries.
-          Pick an indicator, scrub the year slider, and click any country to open its detail sheet.
+          Pick an indicator, scrub the year slider, and click any country to explore its metrics.
         </p>
       </div>
       <atlas-country-search
         [query]="store.searchQuery()"
         [results]="store.searchResults()"
         (queryChange)="store.setSearch($event)"
-        (pick)="store.selectCountryByCode($event)"
+        (pick)="selectCountryByCode($event)"
       />
     </header>
 
@@ -81,18 +81,18 @@
         <atlas-globe-map
           [features]="store.features()"
           [colors]="store.colorByNumericId()"
-          [selectedNumericId]="store.selectedNumericId()"
+          [selectedNumericId]="null"
           [hoveredNumericId]="store.hoveredNumericId()"
-          (select)="store.selectCountryByNumericId($event)"
+          (select)="selectCountry($event)"
           (hover)="store.hover($event)"
         />
       } @else {
         <atlas-world-map
           [shapes]="store.shapes()"
           [colors]="store.colorByNumericId()"
-          [selectedNumericId]="store.selectedNumericId()"
+          [selectedNumericId]="null"
           [hoveredNumericId]="store.hoveredNumericId()"
-          (select)="store.selectCountryByNumericId($event)"
+          (select)="selectCountry($event)"
           (hover)="store.hover($event)"
         />
       }
@@ -132,12 +132,5 @@
         <p class="brief__source">Source: {{ shortSource(meta.source) }}</p>
       </section>
     }
-
-    <atlas-country-sheet
-      [profile]="store.selectedProfile()"
-      [year]="store.selectedYear()"
-      [yearStart]="store.manifest()?.yearStart ?? null"
-      (close)="store.closeSheet()"
-    />
   </div>
 </div>

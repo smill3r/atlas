@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { INDICATOR_REPOSITORY } from './core/data/indicator-repository';
 import { StaticHttpIndicatorRepository } from './core/data/static-http-indicator-repository';
+import { routes } from './app.routes';
 
 // JSDOM does not implement IntersectionObserver; stub it so RevealDirective
 // can construct without throwing in the test environment.
@@ -25,6 +27,7 @@ describe('App', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter(routes),
         { provide: INDICATOR_REPOSITORY, useClass: StaticHttpIndicatorRepository },
       ],
     }).compileComponents();
@@ -35,12 +38,10 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('renders the paper title block', async () => {
+  it('renders a router-outlet', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.paper__title')?.textContent).toContain(
-      'The State of the World',
-    );
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AtlasPageComponent } from './features/atlas/atlas-page/atlas-page.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AtlasPageComponent],
-  template: `<atlas-page />`,
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
 })
 export class App {}

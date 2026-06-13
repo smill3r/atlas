@@ -294,6 +294,18 @@ export class AtlasStore {
     return { icon, headline, subline, percent, trend };
   });
 
+  // --- World averages (for comparison line in detail charts) ----------------
+
+  /** World aggregate series for each indicator code. */
+  readonly worldAverages = computed<Record<string, (number | null)[]>>(() => {
+    const byCode = this.indicatorsByCode();
+    const result: Record<string, (number | null)[]> = {};
+    for (const [code, data] of Object.entries(byCode)) {
+      result[code] = data.aggregates['World'] ?? [];
+    }
+    return result;
+  });
+
   // --- Selected country profile (all indicators) ----------------------------
 
   readonly selectedProfile = computed<CountryProfile | null>(() => {
@@ -355,6 +367,10 @@ export class AtlasStore {
   selectCountryByCode(code: string): void {
     this.selectedCountryCode.set(code);
     this.searchQuery.set('');
+  }
+  /** Returns the ISO alpha-3 code for a numeric map ID, or null if not found. */
+  getCountryCode(numericId: string): string | null {
+    return this.countryByNumericId().get(numericId)?.code ?? null;
   }
   hover(numericId: string | null): void {
     this.hoveredNumericId.set(numericId);

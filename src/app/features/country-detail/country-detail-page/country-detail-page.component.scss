@@ -1,0 +1,308 @@
+@use 'styles/mixins' as *;
+
+// ---------------------------------------------------------------------------
+// Page wrapper
+// ---------------------------------------------------------------------------
+.detail {
+  min-height: 100dvh;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  animation: fade-in 0.3s ease both;
+}
+
+// ---------------------------------------------------------------------------
+// Header strip
+// ---------------------------------------------------------------------------
+.detail__header {
+  @include paper-surface;
+
+  border-radius: var(--radius-md);
+  padding: var(--space-md) clamp(1rem, 3vw, 1.75rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.detail__back {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  border: 1.5px solid var(--c-ink);
+  background: transparent;
+  color: var(--c-ink);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 44px;
+  transition: background-color 0.18s ease, color 0.18s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--c-ink);
+    color: var(--c-paper);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--c-accent-ink);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.detail__title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail__country {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+
+  @include marker-underline;
+}
+
+.detail__meta {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--c-ink-soft);
+  letter-spacing: 0.03em;
+}
+
+// ---------------------------------------------------------------------------
+// Year scrubber
+// ---------------------------------------------------------------------------
+.detail__scrubber {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.detail__scrubber-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-ink-soft);
+}
+
+.detail__scrubber-range {
+  width: clamp(120px, 20vw, 220px);
+  accent-color: var(--c-accent);
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.detail__scrubber-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  min-width: 3ch;
+  font-size: 0.9rem;
+}
+
+// ---------------------------------------------------------------------------
+// Load states
+// ---------------------------------------------------------------------------
+.detail__loading,
+.detail__error,
+.detail__notfound {
+  @include paper-surface;
+
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  display: grid;
+  place-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+.detail__spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--c-paper-edge);
+  border-top-color: var(--c-accent);
+
+  @include motion-safe {
+    animation: spin 0.9s linear infinite;
+  }
+}
+
+.detail__notfound-msg {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--c-ink-soft);
+}
+
+// ---------------------------------------------------------------------------
+// Indicator card grid
+// ---------------------------------------------------------------------------
+.detail__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  gap: var(--space-md);
+}
+
+// ---------------------------------------------------------------------------
+// Individual indicator card
+// ---------------------------------------------------------------------------
+.icard {
+  @include paper-surface;
+
+  border-radius: var(--radius-md);
+  padding: var(--space-md) clamp(0.9rem, 2.5vw, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  animation: stat-in 0.45s ease both;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.08s * $i};
+    }
+  }
+}
+
+.icard__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.icard__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.icard__name {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--c-ink-soft);
+  line-height: 1.3;
+}
+
+.icard__value-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.icard__number {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.icard__unit {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--c-ink-soft);
+  align-self: flex-end;
+  padding-bottom: 0.1em;
+}
+
+.icard__trend {
+  font-size: 1.1rem;
+  line-height: 1;
+
+  &[data-trend='up'] { color: var(--c-accent); }
+  &[data-trend='down'] { color: #f7414f; }
+  &[data-trend='flat'] { color: var(--c-ink-soft); }
+}
+
+.icard__percentile {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-accent);
+  background: rgba(31, 111, 107, 0.1);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  align-self: center;
+
+  span {
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--c-ink-soft);
+  }
+}
+
+.icard__nodata {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--c-ink-soft);
+  font-style: italic;
+}
+
+.icard__chart {
+  overflow: hidden;
+}
+
+.icard__bullet {
+  // slight top spacing already from gap
+}
+
+.icard__desc {
+  margin: 0;
+  font-size: 0.77rem;
+  color: var(--c-ink-soft);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+.detail__footer {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--c-ink-soft);
+  text-align: center;
+  padding: var(--space-sm) 0 var(--space-md);
+}
+
+// ---------------------------------------------------------------------------
+// Mobile
+// ---------------------------------------------------------------------------
+@media (max-width: 720px) {
+  .detail__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detail__scrubber {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .detail__scrubber-range {
+    width: 100%;
+    flex: 1 1 140px;
+  }
+
+  .detail__grid {
+    grid-template-columns: 1fr;
+  }
+}
