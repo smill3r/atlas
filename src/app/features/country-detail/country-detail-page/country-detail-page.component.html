@@ -1,0 +1,138 @@
+<div class="detail" role="main">
+
+  <!-- ── Header ────────────────────────────────────────────────── -->
+  <header class="detail__header">
+    <a routerLink="/" class="detail__back" aria-label="Back to map">
+      ← Map
+    </a>
+
+    @if (store.selectedProfile(); as p) {
+      <div class="detail__title-group">
+        <h1 class="detail__country">{{ p.country.name }}</h1>
+        <p class="detail__meta">{{ p.country.region }} · {{ p.country.incomeGroup }}</p>
+      </div>
+    } @else if (store.loadStatus() !== 'loading') {
+      <div class="detail__title-group">
+        <h1 class="detail__country">Country not found</h1>
+      </div>
+    }
+
+    @if (store.selectedYear(); as year) {
+      <div class="detail__scrubber">
+        <label class="detail__scrubber-label" for="detail-year">Year</label>
+        <input
+          id="detail-year"
+          class="detail__scrubber-range"
+          type="range"
+          [min]="yearStart()"
+          [max]="yearEnd()"
+          [value]="year"
+          aria-label="Select year"
+          (input)="store.selectYear($any($event.target).valueAsNumber)"
+        />
+        <output class="detail__scrubber-value">{{ year }}</output>
+      </div>
+    }
+  </header>
+
+  <!-- ── Loading ───────────────────────────────────────────────── -->
+  @if (store.loadStatus() === 'loading') {
+    <div class="detail__loading" role="status" aria-live="polite">
+      <span class="detail__spinner" aria-hidden="true"></span>
+      <p>Loading data…</p>
+    </div>
+  }
+
+  <!-- ── Error ─────────────────────────────────────────────────── -->
+  @if (store.loadStatus() === 'error') {
+    <div class="detail__error" role="alert">
+      <p>Failed to load data.</p>
+      <a routerLink="/" class="detail__back">Return to map</a>
+    </div>
+  }
+
+  <!-- ── Not found ─────────────────────────────────────────────── -->
+  @if (store.loadStatus() === 'loaded' && !store.selectedProfile()) {
+    <div class="detail__notfound" role="alert">
+      <p class="detail__notfound-msg">Country not found in dataset.</p>
+      <a routerLink="/" class="detail__back">Return to map</a>
+    </div>
+  }
+
+  <!-- ── Indicator grid ─────────────────────────────────────────── -->
+  @if (store.selectedProfile(); as p) {
+    <div class="detail__grid" aria-label="Indicator charts for {{ p.country.name }}">
+      @for (stat of p.stats; track stat.meta.code) {
+        <article
+          class="icard"
+          aria-label="{{ stat.meta.name }}"
+        >
+          <header class="icard__header">
+            <span class="icard__icon" aria-hidden="true">{{ icon(stat.meta.code) }}</span>
+            <h2 class="icard__name">{{ stat.meta.name }}</h2>
+          </header>
+
+          <div class="icard__value-row">
+            @if (stat.value !== null) {
+              <span class="icard__number">{{ stat.value | number: '1.0-1' }}</span>
+              <span class="icard__unit">{{ stat.meta.unit }}</span>
+              @if (stat.trend) {
+                <span
+                  class="icard__trend"
+                  [attr.data-trend]="stat.trend"
+                  [attr.aria-label]="stat.trend === 'up' ? 'trending up' : stat.trend === 'down' ? 'trending down' : 'stable'"
+                >
+                  {{ stat.trend === 'up' ? '↑' : stat.trend === 'down' ? '↓' : '→' }}
+                </span>
+              }
+            } @else {
+              <span class="icard__nodata">No data for {{ store.selectedYear() }}</span>
+            }
+
+            @if (stat.percentile !== null) {
+              <span
+                class="icard__percentile"
+                [attr.aria-label]="stat.percentile + 'th global percentile'"
+              >
+                {{ stat.percentile }}<span>th</span>
+              </span>
+            }
+          </div>
+
+          <!-- Full line chart: country vs world average -->
+          <div class="icard__chart">
+            <atlas-line-chart
+              [countrySeries]="stat.series"
+              [globalSeries]="store.worldAverages()[stat.meta.code] ?? []"
+              [yearStart]="yearStart()"
+              [yearEnd]="yearEnd()"
+              [selectedYear]="store.selectedYear()"
+              [yMin]="chartYMin(stat.meta)"
+              [yMax]="chartYMax(stat.meta)"
+              [color]="chartColor(stat.meta.code)"
+              [unit]="stat.meta.unit"
+              [label]="chartLabel(p.country.name, stat.meta.name)"
+            />
+          </div>
+
+          <!-- Bullet bar: position in global distribution -->
+          <div class="icard__bullet">
+            <atlas-bullet-bar
+              [value]="stat.value"
+              [min]="stat.meta.min"
+              [max]="stat.meta.max"
+              [breaks]="stat.meta.breaks"
+              [label]="stat.meta.name + ' global distribution, country position'"
+            />
+          </div>
+
+          <p class="icard__desc">{{ stat.meta.description }}</p>
+        </article>
+      }
+    </div>
+
+    <footer class="detail__footer">
+      <p>Source: World Development Indicators · World Bank</p>
+    </footer>
+  }
+</div>
